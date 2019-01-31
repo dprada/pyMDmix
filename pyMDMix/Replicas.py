@@ -141,7 +141,7 @@ class Replica(object):
                 from MDSettings import MDSettings
                 mdsettings = MDSettings(**kwargs)
                 
-            for k,v in mdsettings.__dict__.iteritems():
+            for k,v in mdsettings.__dict__.items():
                 if k == 'name': continue
                 if k == 'FF': continue
                 setattr(self, k, v)
@@ -756,7 +756,7 @@ Solvent: {solvent}
         if not self.__folderscreated: self.createFolder()
         self.go()
         self.log.debug("Importing data to %s"%T.BROWSER.getcwd())
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             # Check attribute exists
             if not hasattr(self, key):
                 raise BadAttribute, "%s attribute not in Replica object"%key 

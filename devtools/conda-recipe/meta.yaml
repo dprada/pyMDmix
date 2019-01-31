@@ -1,0 +1,36 @@
+package:
+  name: pymdmix
+  version: 0.2.4
+
+source:
+  path: ../../
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - python {{ python }}
+    - setuptools
+    - numpy
+
+  run:
+    - python  {{ python }}
+    - numpy
+    - scipy
+    - scientificpython
+    - biskit
+    - matplotlib
+    - netcdf4
+    - parmed
+    - mechanize
+    - pycuda
+
+about:
+  home: http://mdmix.sourceforge.net/
+  license: https://github.com/CBDD/pyMDmix/blob/master/Licenses/license-mdmix.txt
+  summary: "This is a copy of https://github.com/CBDD/pyMDmix built to be installed with conda."
+  description: |
+    This is a copy of  https://github.com/CBDD/pyMDmix built to be installed with conda.
+  dev_url: https://github.com/CBDD/pyMDmix
+  doc_url: http://mdmix.sourceforge.net/

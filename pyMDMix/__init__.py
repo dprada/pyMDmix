@@ -28,19 +28,20 @@
 
 __author__="dalvarez"
 __date__ ="$19-ene-2014 18:43:19$"
-__version__="v0.2-4-gc08a4da"
-import settings as S # A basic logger is initiated here
-import tools
+#__version_="v0.2-4-gc08a4da"
+__version__="0.2.4"
+from . import settings as S # A basic logger is initiated here
+from . import tools
 
 browser = tools.BROWSER
 
-from Projects import Project, createProject, loadProject
-from Replicas import Replica, loadReplica
-from MDSettings import MDSettings, parseSettingsConfigFile
-from Systems import System, SolvatedSystem, parseSystemConfigFile, loadSystem
-from Solvents import SolventManager, getSolvent
-from GridsManager import Grid, NewGrid
-from PDB import SolvatedPDB
+from .Projects import Project, createProject, loadProject
+from .Replicas import Replica, loadReplica
+from .MDSettings import MDSettings, parseSettingsConfigFile
+from .Systems import System, SolvatedSystem, parseSystemConfigFile, loadSystem
+from .Solvents import SolventManager, getSolvent
+from .GridsManager import Grid, NewGrid
+from .PDB import SolvatedPDB
 import QueueWriting as Queue
 import Analysis
 

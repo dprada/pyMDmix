@@ -43,22 +43,22 @@ import numpy
 
 class CustomInstall(install):
     def createSolventDB(self, path):
-	from pyMDMix.Solvents import SolventManager
-    	import glob
-	print "Building solvent database..."
-	dbpath = os.path.join(path, 'SOLVENTS.db')
-    	configfilelist = glob.glob(os.path.join(path, '*.config'))
-    	maker=SolventManager()
-    	for conffile in configfilelist:
-        	print 'Adding solvent from %s'%conffile
-        	maker.saveSolvent(maker.createSolvent(conffile), db=dbpath, createEmpty=True)
-	if os.path.exists(dbpath): print "DONE creating solvent DB"
+        from pyMDMix.Solvents import SolventManager
+        import glob
+        print("Building solvent database...")
+        dbpath = os.path.join(path, 'SOLVENTS.db')
+        configfilelist = glob.glob(os.path.join(path, '*.config'))
+        maker=SolventManager()
+        for conffile in configfilelist:
+            print('Adding solvent from {}').format(conffile)
+            maker.saveSolvent(maker.createSolvent(conffile), db=dbpath, createEmpty=True)
+        if os.path.exists(dbpath): print("DONE creating solvent DB")
 
     def run(self):
         install.run(self)
 	# Run solvent library building
-	solventdbpath = os.path.join(self.install_lib, 'pyMDMix','data','solventlib')
-	self.createSolventDB(solventdbpath)
+        solventdbpath = os.path.join(self.install_lib, 'pyMDMix','data','solventlib')
+        self.createSolventDB(solventdbpath)
 	#import glob
 	#import subprocess
 	##for f in glob.glob(solventdbpath+os.sep+'*.config'):
@@ -70,14 +70,15 @@ class CustomInstall(install):
 
 # Make sure I have the right Python version.
 if sys.version_info[:2] < (2, 5):
-    print "pyMDMix requires Python 2.5 or later. Python %d.%d detected" % \
-        sys.version_info[:2]
-    print "Please upgrade your version of Python."
+    print("pyMDMix requires Python 2.5 or later. Python %d.%d \
+          detected").format(sys.version_info[:2])
+    print("Please upgrade your version of Python.")
     sys.exit(-1)
 
 # Make sure AMBERHOME environ variable is set
 if not os.environ.get('AMBERHOME'):
-    print "AMBERHOME env variable not set! Please set this variable pointing to AMBER package installation directory."
+    print("AMBERHOME env variable not set! Please set this variable pointing to AMBER package \
+          installation directory.")
 
 #scriptlist = ['scripts/prepareMDMixProject.py','scripts/runCenteringAndRawEnergyCalculations.py','scripts/createMinotauroQueueInput.py','scripts/createPaintersQueueInput.py', 'scripts/runReplicaCentering.py','scripts/extendReplica.py', 'scripts/printReplicaInfo.py','scripts/createReplicaCenteringInput.py','scripts/runReplicaDensityAndRawCalculation.py', 'scripts/mdmix']
 scriptlist = ['src/mdmix']
@@ -107,8 +108,7 @@ setup(name='pyMDMix',
       include_package_data=True,
       package_data={'pyMDMix.data':['pyMDMix/data/*']},
       scripts=scriptlist,
-	dependency_links=['https://sourcesup.renater.fr/frs/?group_id=180&release_id=2467#stable-releases-_2.8.1-title-content'],
-      install_requires=["numpy","ScientificPython","Biskit","scipy","matplotlib","mechanize","parmed"])
-
+      dependency_links=['https://sourcesup.renater.fr/frs/?group_id=180&release_id=2467#stable-releases-_2.8.1-title-content']
+     )
       #extras_require={'HotSpotsManager':["scipy","matplotlib"],
 #			"CUDA":["pycuda"]})

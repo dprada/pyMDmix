@@ -240,7 +240,7 @@ class GridSpace(object):
         No return, just modification of self.probeMapping
         """
         self.__buildMapping()   # Rebuild clean mapping from loaded grids
-        for probe, newprobes in probeDegeneracyDict.iteritems():
+        for probe, newprobes in probeDegeneracyDict.items():
             for np in newprobes:
                 if self.probeMapping.has_key(np): self.log.warn("Overwriting existing Mapping Key: %s"%np)
                 self.probeMapping[np] = self.probeMapping[probe]
@@ -324,7 +324,7 @@ class GridSpace(object):
         # REVERSE DICTIONARY TO FIND TYPES AND NAMES FROM DIM POSITION
         # If degeneracy, same dimension index may correspond to different probes
         map_dict = copy.deepcopy(self.probeMapping)
-        for n, d in self.probeMapping.iteritems():
+        for n, d in self.probeMapping.items():
             if isinstance(d, list):
                 for i in d:
                     if not map_dict.has_key(i):

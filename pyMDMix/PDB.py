@@ -98,7 +98,7 @@ class SolvatedPDB(bi.PDBModel):
             dbsolvents = [man.getSolvent(s) for s in man.listSolvents()]
             solvresnames = dict([(s.name, map(repr,s.residues)) for s in dbsolvents])
             possible = []
-            for sol, res in solvresnames.iteritems():
+            for sol, res in solvresnames.items():
                 if set(res) == resnames: possible.append(sol)
 
             if not possible:

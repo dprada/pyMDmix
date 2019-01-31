@@ -198,8 +198,8 @@ class Solvent(object):
         
         # ADD other attributes from options file
         # can be used in specific actions later
-        for key, val in kwargs.iteritems():
-            if val: print "Adding attribute,vals: %s, %s"%(key,val)
+        for key, val in kwargs.items():
+            if val: print("Adding attribute,vals: %s, %s"%(key,val))
             setattr(self, key, val)
 
         # Parse probesmap and typesmap
@@ -226,13 +226,14 @@ class Solvent(object):
         #     Set up probes, types and interrelations     #
         ###################################################
         probelist = []
-        for probe, mask in probesmap.iteritems():
+        for probe, mask in probesmap.items():
             d = T.amberMaskToDict(mask)
             
             # Check all residues in the mapping are present in the solvent box
             resnames = set(d.keys())
             if not resnames <= set(map(lambda x: x.name, self.residues)): # all resnames should be present in the off
-                raise MappingError, "In PROBES section, mapping to unkown residues: %s"%(resnames - self.residues)
+                raise MappingError("In PROBES section, mapping to unkown residues: %s"%(resnames - \
+                                                                                        self.residues))
 
             # Check all atoms are present in each residue
             # TODO keep loop structure for multiple residues although
@@ -241,8 +242,9 @@ class Solvent(object):
                 resatoms = set([at.name for at in self.getResidue(res).atoms])
                 atoms = set(d[res])
                 if not atoms <= resatoms:
-                    raise MappingError, "In PROBES section, probe %s is mapping \
-                                        to unkown atom names for residue %s: %s"%(probe, res, atoms - resatoms)
+                    raise MappingError("In PROBES section, probe %s is mapping \
+                                        to unkown atom names for residue %s: %s"%(probe, res,\
+                                                                                  atoms - resatoms))
 
             res = self.getResidue(d.keys()[0])
             atoms = d[res.name]
@@ -364,20 +366,22 @@ class Solvent(object):
         # Check self.boxunit exists
         allunits = offparser.getUnits()
         if not self.boxunit in allunits:
-            raise SolventParserError, "Main box unit %s not present in object file %s!"%(self.boxunit, self.offpath)
+            raise SolventParserError("Main box unit %s not present in object file \
+                                     %s!"%(self.boxunit, self.offpath))
 
         self.volume = offparser.getVolume(self.boxunit)
         if not self.volume:
-            raise SolventParserError, "Main box unit %s does not have box information! \
-                            Are you sure this is the pre-equilibrated solvent box?"%self.boxunit
+            raise SolventParserError("Main box unit %s does not have box information! \
+                            Are you sure this is the pre-equilibrated solvent box?"%self.boxunit)
 
         # Now check all residues in the boxunit are also inside the object file as
         # separate units. Will save the list as a set for easy comparison.
         unitresidues = set(offparser.getResidueList(self.boxunit, unique=True))
         if not unitresidues <= set(allunits):  # Check residues set is a subset of allunits or equal
             missingres = unitresidues - set(allunits)
-            raise SolventParserError, "Objectfile %s does not contain units for the residues %s present in \
-                                   main solvent box %s!"%(self.offpath, ','.join(missingres), self.boxunit)
+            raise SolventParserError("Objectfile %s does not contain units for the residues %s present in \
+                                   main solvent box %s!"%(self.offpath, ','.join(missingres),\
+                                                          self.boxunit))
         else:
             # Correct. Fecth residue instances from off
             self.residues = [offparser.getResidue(r) for r in unitresidues]
@@ -400,7 +404,7 @@ class SolventManager(object):
         # Fetch solvents
         lib = self.getDatabase()
         solv=[]
-        for s, info in lib.iteritems():
+        for s, info in lib.items():
             solv.append(info.__str__().replace('\n','\t'))
         strout+='\n\t'+'\n\t'.join(solv)+'\n'
         strout+='-'*50
@@ -423,7 +427,7 @@ class SolventManager(object):
         :raise MissingSection: Section is not present in :attr:`dict`
         """
         sect = dict.get(name)
-        if not sect: raise MissingSection, "%s section missing in Solvent Config file."%name
+        if not sect: raise MissingSection("%s section missing in Solvent Config file."%name)
         return sect
     
     def __getOption(self, dict, name):
@@ -438,14 +442,14 @@ class SolventManager(object):
         :raises MissingOption: Option is not present in :attr:`dict
         """
         setting = dict.get(name)
-        if not setting: raise MissingOption, "%s option missing in Solvent Config file."%name
+        if not setting: raise MissingOption("%s option missing in Solvent Config file."%name)
         return setting
 
     def __todict(self, settingoption):
         """
         Convert a setting section into dictionary fromat"
         """
-        m = dict([[k, v.value] for k,v in settingoption.iteritems()])
+        m = dict([[k, v.value] for k,v in settingoption.items()])
         return m
 
     def __parseConfig(self, configFile):
@@ -498,7 +502,7 @@ class SolventManager(object):
                 if not osp.exists(f):
                     # Trye to search it in configfile directory
                     f = osp.join(osp.dirname(file), f)
-                    if not osp.exists(f): raise P.InvalidPath, "%f frcmod file not found"%f
+                    if not osp.exists(f): raise P.InvalidPath("%f frcmod file not found"%f)
                     frcmodlist.append(f)
                 else:
                     frcmodlist.append(f)
@@ -526,11 +530,11 @@ class SolventManager(object):
         corrections = {}
         if correctionSect:
             corr = self.__todict(correctionSect)
-            for type, val in corr.iteritems():
+            for type, val in corr.items():
                 type = type.upper()
                 corrections[type] = dict([[el.strip().upper() for el in probe.split(':')] for probe in val.strip().split(',')])
             # transform to float the numbers
-            for k,val in corrections.iteritems():
+            for k,val in corrections.items():
                 corrections[k] = dict(zip(val.keys(),map(float, val.values())))
             del correctionSect, type, k, val
 
@@ -561,7 +565,7 @@ class SolventManager(object):
             options = self.__parseConfig(configfile)
             return Solvent(**options)
         else:
-            raise BadFile, "File %s does not exist"%configfile
+            raise BadFile("File %s does not exist"%configfile)
 
     def __getDatabase(self, db=None, createEmpty=False):
         """
@@ -646,7 +650,7 @@ class SolventManager(object):
             self.log.info("Removed solvent %s from database %s"%(solvName, db))
             return True
         else:
-            raise SolventManagerError, "DB %s does not contain solvent name %s"%(db, solvName)
+            raise SolventManagerError("DB %s does not contain solvent name %s"%(db, solvName))
 
     def getSolvent(self, name, db=None):
         """
@@ -694,8 +698,8 @@ class SolventManager(object):
         Like list solvents but will print to screen information about the solvents.
         """
         lib = self.getDatabase(db)
-        for s, info in lib.iteritems():
-            print s,info.info, info.boxunit
+        for s, info in lib.items():
+            print(s,info.info, info.boxunit)
 
 
 # AUXILIARY FUNCTION TO GET SOLVENT INSTANCES FROM DEFAULT DATABASES

@@ -65,10 +65,9 @@ Summary for all
 import os
 import sys
 import logging
-import user
 import os.path as osp
-import tools as T
-import SettingsParser as P
+from . import tools as T
+from . import SettingsParser as P
 
 VERSION="0.1"
 
@@ -83,16 +82,17 @@ if not rootlog.handlers:
     rootlog.handlers[0].setFormatter(T.LogFormatter())
 
 # USER MDMIX HOME
-USER_MDMIX_HOME = osp.join(user.home, '.mdmix')
+USER_MDMIX_HOME = osp.join(osp.expanduser("~"), '.mdmix')
 
 # Parse settings from package defaults and user defined
 __CFG_DEFAULT = osp.join(T.dataRoot('defaults'),'settings.cfg')
 __CFG_USER    = osp.join(USER_MDMIX_HOME,'settings.cfg')
+
 try:
     m = P.SettingsManager(__CFG_DEFAULT, __CFG_USER, createmissing=True  )
     m.updateNamespace( locals() )
-except Exception, why:
-    raise P.SettingsError, 'Error importing pyMDMix settings: %s'%why
+except Exception as why:
+    raise P.SettingsError('Error importing pyMDMix settings: %s'%why)
 
 ## REPLICA DEFAULTS PATHS
 CFG_MD_DEFAULT = osp.join(T.dataRoot('defaults'),'md-settings.cfg')
@@ -100,8 +100,8 @@ CFG_MD_USER    = osp.join(USER_MDMIX_HOME,'md-settings.cfg')
 try:
     m = P.SettingsManager(CFG_MD_DEFAULT, CFG_MD_USER, createmissing=True  )
     m.updateNamespace( {} )
-except Exception, why:
-    raise P.SettingsError, 'Error importing pyMDMix MD default settings: %s'%why
+except Exception as why:
+    raise P.SettingsError('Error importing pyMDMix MD default settings: %s'%why)
 
 
 ##
@@ -121,7 +121,7 @@ TEST_DIR =  T.dataRoot('test')
 #            "RAWDGNOAVG":False, "CORRECTEDGRIDS":False}
 
 # CHECK AMBER INSTALLATION
-AMBERHOME = os.environ.get('AMBERHOME') or sys.exit('AMBERHOME env variable not defined!')
+AMBERHOME = (os.environ.get('AMBERHOME') or os.environ.get('CONDA_PREFIX')) or sys.exit('AMBERHOME env variable not defined!')
 
 # Fetch executables folder
 if osp.exists(AMBERHOME+os.sep+'exe'):
@@ -176,7 +176,7 @@ except ImportError:
 
 
 ## CREATE A GLOBAL BROWSER ALL CLASSES CAN ACCESS
-from Browser import Browser
+from .Browser import Browser
 global BROWSER
 BROWSER = Browser()
 
@@ -194,7 +194,7 @@ def setLogger(level=None, logFile=None):
 
     if not level: level = 'INFO'
     if level.upper() not in LOGLEVEL.keys():
-        raise KeyError, "%s level not valid. Valid names: %s"%(level.upper(),LOGLEVEL.keys())
+        raise KeyError("%s level not valid. Valid names: %s"%(level.upper(),LOGLEVEL.keys()))
 
     rootlog = logging.getLogger()
     rootlog.setLevel(level.upper())
@@ -215,11 +215,11 @@ def setLogger(level=None, logFile=None):
 ######################
 ## clean up name space
 
-del T, user
+del T
 del __CFG_DEFAULT, __CFG_USER, m
 del __defff, __ffok, root, dirs, files
 del rootlog, os, osp, logging, testparam, Browser
 
 if __name__ == '__main__':
-    for k, v in locals().iteritems():
-        print k, v
+    for k, v in locals().items():
+        print (k, v)

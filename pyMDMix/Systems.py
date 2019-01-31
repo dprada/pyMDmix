@@ -44,10 +44,10 @@ import os
 import os.path as osp
 import logging
 
-import Solvents
-import tools as T
-import settings as S
-from Structures import FileLock
+from . import Solvents
+from . import tools as T
+from . import settings as S
+from .Structures import FileLock
 
 class SystemError(Exception):
     pass
@@ -173,7 +173,7 @@ class System(object):
         :return: Nothing will be returned, the object file generated will be stored in :attr:`amberOFF` as an :class:`~OFFManager.OFFManager` object.
         """
         if not osp.exists(amberPDB):
-            raise BadFile, "PDB file %s does not exists"
+            raise BadFile("PDB file %s does not exists")
 
         FF = FF or self.FF
 
@@ -195,7 +195,7 @@ class System(object):
         # Special case: test
         # Grab off from testing directory
         if amberOFF.lower() == 'test': 
-            print "WORKING WITH A TEST SYSTEM!"
+            print("WORKING WITH A TEST SYSTEM!")
             amberOFF = T.testRoot('pep','pep.off')
             self.name = 'testsystem'
             self.sysFilePath = self.name+'.msys'
@@ -217,11 +217,11 @@ class System(object):
         :arg bool tmp: Work in temporary folder.
         """
         if not self.amberOFF:
-            raise SystemError, "Can not solvate if no Amber Object File is assigned."
+            raise SystemError("Can not solvate if no Amber Object File is assigned.")
         
         if isinstance(solvent, str): solvent = Solvents.getSolvent(solvent)
         if not solvent:
-            raise SystemError, 'Invalid solvent instance or name.'
+            raise SystemError('Invalid solvent instance or name.')
 
         # Build a loger just for this method
         log = logging.getLogger("SystemLogger")
@@ -290,7 +290,7 @@ class System(object):
     def load(self, sysfile=None):
         "Load existing project from pickled file"
         f = sysfile or self.sysFilePath
-        if not osp.exists(f): raise BadFile, "File %s not found."%f
+        if not osp.exists(f): raise BadFile("File %s not found."%f)
         with FileLock(f) as lock:
             d = T.load(f)
 #            d['log'] = logging.getLogger("System (%s)"%d['name'])
@@ -352,8 +352,8 @@ class SolvatedSystem(System):
         :arg str top: path to PRMTOP file
         :arg str crd: path to PRMCRD file
         """
-        if not osp.exists(top): raise BadFile, "File %s not found."%top
-        if not osp.exists(crd): raise BadFile, "File %s not found."%crd
+        if not osp.exists(top): raise BadFile("File %s not found."%top)
+        if not osp.exists(crd): raise BadFile("File %s not found."%crd)
         self.top = open(top,'r').read()
         self.crd = open(crd,'r').read()
         self.setPDBfromTOPCRD()
@@ -459,9 +459,11 @@ def loadSystem(systemfile=None):
         import glob
         files = glob.glob('*.msys')
         if len(files) > 1:
-            raise SystemError,"More than one system file in current folder. Please give as argument the file to load."
+            raise SystemError("More than one system file in current folder. Please give as\
+                              argument the file to load.")
         elif not files:
-            raise SystemError,"No file found with extension *.msys in current folder and no path was given."
+            raise SystemError("No file found with extension *.msys in current folder and\
+                              no path was given.")
         systemfile = files[0]
     return System(fromfile=systemfile)
 
@@ -471,12 +473,12 @@ def parseSystemConfigFile(projectConfigFile):
     Auxiliary function to build a System from a System configuration file (SCF)
     """
     from Parsers import SystemConfigFileParser
-    if not osp.exists(projectConfigFile): raise BadFile, "File %s not found."%projectConfigFile
+    if not osp.exists(projectConfigFile): raise BadFile("File %s not found."%projectConfigFile)
     sys = SystemConfigFileParser().parse(projectConfigFile)
     return sys
 
 
-import Biskit.test as BT
+import biskit.test as BT
 
 class Test(BT.BiskitTest):
     """Test"""

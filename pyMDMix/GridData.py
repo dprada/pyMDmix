@@ -73,9 +73,10 @@ class GridData(object):
               if '.xplor' in fname or '.cns' in fname: self.readXPLOR(fname)
               elif '.dx' in fname: self.readDX(fname)
               else: 
-                raise BadFile, "Can not identify %s file format.It should contain 'xplor', 'cns' or 'dx' extension"%fname
+                raise BadFile("Can not identify %s file format.It should contain 'xplor', 'cns' \
+                              or 'dx' extension"%fname)
             else:
-                raise BadFile, "File %s not found."%fname   
+                raise BadFile("File %s not found."%fname)
 
         # Construct empty grid
         elif origin != None:
@@ -84,7 +85,8 @@ class GridData(object):
             if len(origin)==3:
                 self.origin = npy.array(origin) - margin
             else:
-                raise BadAttribute,"Invalid origin. Should be a tuple or list of 3 floats or numpy array"
+                raise BadAttribute("Invalid origin. Should be a tuple or list of 3 floats or \
+                                   numpy array")
 
             if spacing != None:
                 if type(spacing) is int or type(spacing) is float:
@@ -105,7 +107,8 @@ class GridData(object):
                     self.shape=(geomExtent+margin*2)/self.delta
                     self.shape= map(int, self.shape)
                 else:
-                    raise BadAttribute, "Constructing empty Grid: When spacing is given, origin+shape or origin+geomExtent are mandatory."
+                    raise BadAttribute("Constructing empty Grid: When spacing is given, \
+                                       origin+shape or origin+geomExtent are mandatory.")
 
             else:
                 # No spacing, to create grid, origin+shape+geometricExtent are needed, spacing will be adapted
@@ -118,13 +121,15 @@ class GridData(object):
                         geomExtent = npy.array(geomExtent).astype(float)
                     self.delta = (geomExtent+margin*2)/self.shape
                 else:
-                    raise BadAttribute, "Constructing empty Grid: When no spacing is given, origin+shape+geomExtent are mandatory. Grid not created."
+                    raise BadAttribute("Constructing empty Grid: When no spacing is given, \
+                                       origin+shape+geomExtent are mandatory. Grid not created.")
 
             # Build data array. dtype can be assigned through kwargs
             self.data = npy.zeros(self.shape, **kwargs) + value_filling
 
         else:
-            raise BadAttribute, "To create a grid, a filename of an existing grid or an origin+shape or origin+extent must be given."
+            raise BadAttribute("To create a grid, a filename of an existing grid or an \
+                               origin+shape or origin+extent must be given.")
 
     def __getitem__(self, point):
         """Iterate Data giving cartesian coordinates"""
@@ -150,11 +155,11 @@ class GridData(object):
     def __call__(self):
         """Returns information about the grid if already defined"""
         if (self.data !='' and self.origin !='' and self.delta !=''):
-            print "Grid instance source:",self.source
-            print "Data shape: ",self.data.shape," number of entries: ",self.data.size
-            print "Grid Origin: ",self.origin
-            print "Grid Spacing: ",self.delta
-        else: print "Empty grid instance or data missing!"
+            print("Grid instance source:",self.source)
+            print("Data shape: ",self.data.shape," number of entries: ",self.data.size)
+            print("Grid Origin: ",self.origin)
+            print("Grid Spacing: ",self.delta)
+        else: print("Empty grid instance or data missing!")
   
     def readXPLOR(self, CNS):
         """
@@ -248,7 +253,7 @@ class GridData(object):
         struct.unpack('s',of.read(1))
         hlen, =struct.unpack('i',of.read(4))
         header=struct.unpack('s'*hlen, of.read(hlen))
-        print ''.join(header)
+        print(''.join(header))
 
         # Write grid specifications
         maxd = [0,0,0]
@@ -262,7 +267,7 @@ class GridData(object):
 
         sentinel, = struct.unpack('i',of.read(4))    #end of file testimony
         of.close()
-        if sentinel != -9999: print 'read error!'
+        if sentinel != -9999: print('read error!')
 
         self.data = grid
         self.delta = npy.array([(dx/nx), (dy/ny), (dz/nz)])
@@ -343,7 +348,7 @@ class GridData(object):
             grid = npy.load(pick)
             self.data = grid
             self.source = pick
-        else: raise IOError, "File not found."
+        else: raise IOError("File not found.")
 
     def loadVar(self, pick):
         """DEPREACTED. Loads origin and delta information from a pickled file"""
@@ -352,7 +357,7 @@ class GridData(object):
             origin, delta= V[:]
             self.origin = origin
             self.delta = delta
-        else: raise IOError,"File not found."
+        else: raise IOError("File not found.")
 
     def writeDX(self, dxname, header=False, gzip=False):
         """
@@ -395,7 +400,7 @@ class GridData(object):
             dxf.write('\n')
             dxf.close()
 
-        else: raise GridError, "Data or parameters missing. Can't write DX File."
+        else: raise GridError("Data or parameters missing. Can't write DX File.")
         
     def dump(self, dataname=None, varname=None):
         """
@@ -404,7 +409,8 @@ class GridData(object):
         if (self.data !='' and self.origin !='' and self.delta !=''):
 
           if not self.source:
-              raise BadAttribute, "Must provide a name for the dumped files. Source attribute not defined."      
+              raise BadAttribute("Must provide a name for the dumped files. Source attribute not \
+                                 defined.")
 
           if dataname:
             dname = dataname      #Grid data pickle name
@@ -420,7 +426,7 @@ class GridData(object):
           V = [self.origin, self.delta]
           npy.save(vdname, V)
         else:
-          raise BadAttribute, "Data or parameters missing. Check attributes."
+          raise BadAttribute("Data or parameters missing. Check attributes.")
 
     def writeXPLOR(self, xplorname, header="", gzip=False, binary=False):
         """
@@ -585,7 +591,7 @@ class GridData(object):
           spacing = self.delta
           origin = self.origin
           return (indexes * spacing) + origin
-        else: raise BadAttribute, "indexes should be tuple or list of len 3."
+        else: raise BadAttribute("indexes should be tuple or list of len 3.")
 
     def getIndex(self, cartesian):
         """
@@ -747,7 +753,7 @@ class GridData(object):
             return newarray
 
         else:
-            raise BadAttribute, "Spacing is not equal. Can not trim."
+            raise BadAttribute("Spacing is not equal. Can not trim.")
 
     def takeSubGridBox(self, bot, top,forceCubic=0):
         """
@@ -859,7 +865,8 @@ class GridData(object):
     def setRadialValues(self, rmax, rmin, value, center=None, point=None):
         "Set all values around 'center' or 'point' from rmin to rmax angstroms to 'value'"
         if center is None and point is None:
-            raise AttributeError, "Calling setRadialValues requires a cooridnate ('center' arg) or a grid index ('point' arg)."
+            raise AttributeError("Calling setRadialValues requires a cooridnate ('center' arg) or \
+                                 a grid index ('point' arg).")
 
         if center != None: idx = self.getIndex(center)
         elif point != None: idx = point
@@ -872,23 +879,26 @@ class GridData(object):
 
 class GridFromPDB(GridData):
     def __init__(self, PDB, spacing, buff=0, value_filling=0, takeProtein=True):
-	"""
-	PDB	PDBModel or PDB file
-	spacing grid spacing
-	buff	buffer around atom coordinates in angstroms
-	value_filling	initial value of the grid
-	takeProtein	Boolean. If true, will try to compress only protein from PDB.
-			If False, will take the whole PDB itself
-	"""
+
+        """
+PDB	PDBModel or PDB file spacing grid spacing
+buff buffer around atom coordinates in angstroms
+value_filling	initial value of the grid
+takeProtein	Boolean. If true, will try to compress only protein from PDB.
+If False, will take the whole PDB itself
+"""
+
         import Biskit
         if isinstance(PDB, Biskit.PDBModel):
             prot = PDB
         elif os.path.exists(PDB):
             pdb_model = Biskit.PDBModel(PDB)                    #Open pdb as Biskit PDBModel
-            if takeProtein: prot = pdb_model.compress(pdb_model.maskProtein())  #Read only protein from PDBModel
-	    else: prot = pdb_model
+            if takeProtein:
+                prot = pdb_model.compress(pdb_model.maskProtein())  #Read only protein from PDBModel
+            else:
+                prot = pdb_model
         else: 
-            print "Couldn't locate PDB file: ",PDB
+            print("Couldn't locate PDB file: ",PDB)
             return False        
         
         xyz = prot.xyz                                                  # get protein coordinates

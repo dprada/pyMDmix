@@ -133,7 +133,7 @@ class MDSettings(object):
         # ONLY ADOPT NOT DEFINED IN KWARGS
         m = self.__getSettings()
         settingKeys = m.settings2dict().keys()
-        for k,v in kwargs.iteritems():
+        for k,v in kwargs.items():
             if v is None: continue
             if k in settingKeys: setattr(self, k, v)
             else:

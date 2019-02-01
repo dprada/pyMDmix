@@ -27,7 +27,7 @@ from operator import itemgetter
 from itertools import groupby
 import numpy as npy
 
-import Biskit as bi
+import biskit as bi
 
 
 # Amber residue names sometimes not well identified by PDBModel
@@ -155,7 +155,8 @@ class SolvatedPDB(bi.PDBModel):
         "Iterate over requested residues coordinates"
         if not self.resMasks: self.__prepareSolventResMasks()
         masks = self.resMasks.get(residuename)
-        if not npy.any(masks): raise SolvatedPDBError, "Invalid residue name %s. Residue not in solvent %s."%(residuename,self.solvent.name)
+        if not npy.any(masks): raise SolvatedPDBError("Invalid residue name %s. Residue not in \
+                                                      solvent %s."%(residuename,self.solvent.name))
         for m in masks:
                 yield self.xyz[m]
 
@@ -167,7 +168,9 @@ class SolvatedPDB(bi.PDBModel):
             return self.xyz[masks]
         else:
             # Not normal probe, may be a COM probe?
-            if not probename in self.solvent.comprobes.keys(): raise SolvatedPDBError, "Invalid probe name %s. Probe not in solvent %s."%(probename, self.solvent.name)
+            if not probename in self.solvent.comprobes.keys():
+                raise SolvatedPDBError("Invalid probe name %s. Probe not in solvent \
+                                        %s."%(probename,self.solvent.name))
             else:
                 # Its a com probe, determine residue and 
                 # Fetch COM coordinates
@@ -269,7 +272,7 @@ class SolvatedPDB(bi.PDBModel):
             self.addAcceptedResidues(extraResidueList)
         if not npy.any(self.soluteMask): self.setSoluteSolventMask()
         resIds = npy.unique(npy.array(self['residue_number'])[self.soluteMask])
-        resGroups = [map(itemgetter(1),g) for k,g in groupby(enumerate(resIds), lambda (i,x):i-x)]
+        resGroups = [map(itemgetter(1),g) for k,g in groupby(enumerate(resIds), lambda i,x:i-x)]
         outMask = ''
         nGroups = len(resGroups)
         ng = 1

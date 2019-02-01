@@ -42,12 +42,12 @@ from .Systems import System, SolvatedSystem, parseSystemConfigFile, loadSystem
 from .Solvents import SolventManager, getSolvent
 from .GridsManager import Grid, NewGrid
 from .PDB import SolvatedPDB
-import QueueWriting as Queue
-import Analysis
-
+from . import QueueWriting as Queue
+from . import Analysis
+from .create_db import init_solvent_db
 
 import atexit
 atexit.register(tools.EXECUTOR.terminate)
 
 #from PDB import SolvatedSystem
-from settings import setLogger
+from .settings import setLogger

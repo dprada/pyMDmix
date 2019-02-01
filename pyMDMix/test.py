@@ -29,8 +29,8 @@ Inherited functions are modified to make testing work on pyMDMix tree structure.
 All rights to Raik.
 """
 
-from Biskit.test import *
-import pyMDMix.tools as T
+from biskit.test import *
+from . import tools as T
 import os.path as osp
 
 # TEST CASE FOR FUTURE
@@ -41,8 +41,8 @@ class PyMDMixTestLoader( BiskitTestLoader ):
     Wrap for BiskitTestLoader to match pyMDMix structure
     """
     def modulesFromPath( self, path=osp.split(T.projectRoot())[0], module='pyMDMix' ):
-	import glob
-	module_folder = module.replace('.', os.path.sep)
+        import glob
+        module_folder = module.replace('.', os.path.sep)
         files = glob.glob( os.path.join( path, module_folder,'*.py' ) )
         files = map( T.stripFilename, files )
         files = [ f for f in files if f[0] != '_' ]
@@ -55,7 +55,7 @@ class PyMDMixTestLoader( BiskitTestLoader ):
                 pass  ## temporary // remove after testing
         return r
     def collectTests( self, path=osp.split(T.projectRoot())[0], module='pyMDMix' ):
-	modules = self.modulesFromPath( path=path, module=module )
+        modules = self.modulesFromPath( path=path, module=module )
         self.addTestsFromModules( modules )
 
 
@@ -64,7 +64,7 @@ class PyMDMixTestLoader( BiskitTestLoader ):
 ############################################
 
 def _use( defaults ):
-    print """
+    print("""
 Run unittest tests for pyMDMix.
 
     test.py [-i |include tag1 tag2..| -e |exclude tag1 tag2..|
@@ -93,9 +93,10 @@ Examples:
 
 
 Default options:
-"""
+    """)
+
     for key, value in defaults.items():
-        print "\t-",key, "\t",value
+        print("\t-",key, "\t",value)
 
     sys.exit(0)
 
@@ -151,10 +152,10 @@ if __name__ == '__main__':
 
 
     for package in o['p']:
-        print 'collecting ', repr( package )
+        print('collecting ', repr( package ))
         l.collectTests( module=package )
 
     l.run( dry=o['dry'] )
     l.report()
 
-    print "DONE"
+    print("DONE")

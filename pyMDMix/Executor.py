@@ -69,7 +69,9 @@ class Executor(object):
         self.log.debug("Init executor nthreads: %d"%nthreads)
     
     def __del__(self):
-        [self.queue.put(None) for _ in range(self.nthreads)]
+        #for _ in range(self.nthreads):
+        #    self.queue.close()
+        [self.queue.close() for _ in range(self.nthreads)]
     
     def start(self):
         self.ncalls.value += 1

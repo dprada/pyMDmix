@@ -74,7 +74,8 @@ class Plot(object):
                 outfile = check.getProductionOutputFile(f)
                 
                 if not outfile:
-                    raise PlotError, "Output file for step %i could not be found. Make sure all selected steps are finished: %s"%(f,steps)
+                    raise PlotError("Output file for step %i could not be found. Make sure all\
+                                    selected steps are finished: %s"%(f,steps))
                 
                 # fetch properties from file
                 tmpdata = dict([(p,[]) for p in properties])
@@ -92,7 +93,8 @@ class Plot(object):
         plotdata = {}
         for r, data in rdata.items():
             for prop, vals in data.items():
-                if not plotdata.has_key(prop): plotdata[prop] = {}
+                if prop not in plotdata:
+                    plotdata[prop] = {}
                 plotdata[prop][r] = vals
                 
         # Calc shape of the plot
@@ -256,7 +258,9 @@ class Plot(object):
         if isinstance(results, str):
             results = self.getDictFromOccupancyFile(results)
         elif not isinstance(results, dict):
-            raise AttributeError, "results should be a string with a valid filename containing occupancy results or a dictionary with the results from occupancy action."
+            raise AttributeError("results should be a string with a valid filename containing\
+                                 occupancy results or a dictionary with the results from occupancy\
+                                 action.")
         
         # One color per residue name
         names = results['map'].keys()
@@ -283,7 +287,7 @@ class Plot(object):
             for idval in results[frame]:
                 if idval > maxres: maxres = int(idval)
                 name = idToName.get(idval)
-                if not data.has_key(name): data[name] = []
+                if name not in data: data[name] = []
                 data[name].append((idval,frame))
         
 #        labels = map(idToName.get, data.keys())
@@ -328,7 +332,7 @@ class Plot(object):
         return fig
 
 
-import Biskit.test as BT
+import biskit.test as BT
 import tools as T
 
 class Test(BT.BiskitTest):
@@ -342,4 +346,4 @@ class Test(BT.BiskitTest):
         
 
 if __name__ == "__main__":
-    print "Hello World"
+    print("Hello World")

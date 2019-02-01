@@ -120,10 +120,10 @@ __date__ ="$16-ene-2014 17:09:33$"
 
 import os.path as osp
 import logging
-import settings as S
-import tools as T
-import OFFManager as O
-from containers import Probe
+from . import settings as S
+from . import tools as T
+from . import OFFManager as O
+from .containers import Probe
 
 
 class SolventParserError(Exception):
@@ -246,7 +246,7 @@ class Solvent(object):
                                         to unkown atom names for residue %s: %s"%(probe, res,\
                                                                                   atoms - resatoms))
 
-            res = self.getResidue(d.keys()[0])
+            res = self.getResidue(list(d.keys())[0])
             atoms = d[res.name]
             # Create Probe instance
             # Add type information and expected probability
@@ -463,7 +463,7 @@ class SolventManager(object):
         :arg str configFile: Solvent configuration filename to read and parse.
                 It should contain all mandatory fields.
         """
-        import SettingsParser as P
+        from . import SettingsParser as P
         file = T.absfile(configFile)
         config = P.SettingsParser(file)
         result = config.parse(keepsections=True)
@@ -631,7 +631,7 @@ class SolventManager(object):
         solvLib = T.load(db)
         solvLib[solvent.name] = solvent
         T.dump(solvLib, db)
-        self.log.info("Solvent %s saved to database %s"%(solvent.name, db))
+        print("Solvent %s saved to database %s"%(solvent.name, db))
 
     def removeSolvent(self, solvName, db=None):
         """
@@ -715,7 +715,7 @@ def getSolvent(name):
     return M.getSolvent(name)
 
 ###TESTING
-import Biskit.test as BT
+import biskit.test as BT
 
 class Test(BT.BiskitTest):
     """Test"""

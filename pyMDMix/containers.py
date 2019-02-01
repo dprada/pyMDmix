@@ -64,6 +64,7 @@ class Residue(object):
     positions.
     """
     def __init__(self, name, atoms, connectivity, xyz, *args, **kwargs):
+        from functools import reduce
         self.name = name    #: Name of the residue
         self.atoms = atoms  #: List of :class:`Atom` instances that belong to residue
         self.connectivity = connectivity    #: Tuple with connectivity information

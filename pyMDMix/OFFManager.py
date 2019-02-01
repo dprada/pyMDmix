@@ -49,7 +49,7 @@ __author__="dalvarez"
 __date__ ="$17-ene-2014 1:07:04$"
 
 import os.path as osp
-from containers import Residue, Atom
+from .containers import Residue, Atom
 
 class OFFManagerError(Exception):
     pass
@@ -79,11 +79,12 @@ class OFFManager(object):
         
         if offFile:
             if osp.exists(offFile): self.off = open(offFile, 'r').read()
-            else: raise OFFManagerError, "Object File %s not found"%offFile
+            else:
+                raise OFFManagerError("Object File %s not found"%offFile)
         elif offString:
             self.off = offString
         else:
-            raise OFFManagerError, "offFile or offString are needed for initializing instance."
+            raise OFFManagerError("offFile or offString are needed for initializing instance.")
 
     def __iterOff(self):
         "Returns the file as an iterable list"
@@ -132,7 +133,7 @@ class OFFManager(object):
         except: return []
         connectivity = []
         for line in connectinfo:
-            pair = map(int, line.split())[:2]
+            pair = list(map(int, line.split()))[:2]
             connectivity.append(tuple(pair))
             pair.reverse()
             connectivity.append(tuple(pair))
@@ -169,10 +170,10 @@ class OFFManager(object):
         "Return the list of units int he object file."
         off = self.__iterOff()
         # Skip first line and store names until '!' is found again
-        off.next()
+        next(off)
         units = []
         while 1:
-          line = off.next().strip()
+          line = next(off).strip()
           if "!" in line: break
           units.append(line.split("\"")[1])
         del off
@@ -255,17 +256,18 @@ class OFFManager(object):
         """
         off = self.__iterOff()
         search = '!entry.'+unit+'.unit.'+section
-        line = off.next()
+        line = next(off)
         while line and not search in line:
-            line = off.next()
-        if not line: raise OFFSectionError, "Section %s for unit %s not in file."%(section, unit)
+            line = next(off)
+        if not line:
+            raise OFFSectionError("Section %s for unit %s not in file."%(section, unit))
 
         out = []
         if with_header: out.append(line)
-        line = off.next()
+        line = next(off)
         while not '!entry' in line:
             out.append(line.strip())
-            line = off.next()
+            line = next(off)
         del off
         return out
 
@@ -290,6 +292,7 @@ class OFFManager(object):
         return map(float, boxsection[2:])
 
     def getVolume(self, unit):
+        from functools import reduce
         "Get volume information from the object file for :attr:`self.boxunit`"
         boxdims = self.getBoxDimensions(unit)
         return reduce(lambda x,y: x*y, boxdims)
@@ -326,8 +329,8 @@ class OFFManager(object):
         if self.tmpfile:
             return T.tryRemove(self.tmpfile)
 
-import Biskit.test as BT
-import tools as T
+import biskit.test as BT
+from . import tools as T
 
 class Test(BT.BiskitTest):
     """Test"""

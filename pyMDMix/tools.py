@@ -199,7 +199,7 @@ def amberMaskToDict(maskstring):
     for el in splited:
         if '@' in el:
             split1 = el.split('@')
-            if not out.has_key(split1[0]):
+            if split1[0] not in out:
                 out[split1[0]] =[k.strip() for k in split1[1].split(',')]
             else:
                 out[split1[0]] += [k.strip() for k in split1[1].split(',')]

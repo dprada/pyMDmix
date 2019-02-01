@@ -34,11 +34,11 @@ import os.path as osp
 import logging
 
 from . import Systems
-from MDSettings import MDSettings
-import settings as S
-import tools as T
-from Replicas import Replica
-from Structures import FileLock
+from .MDSettings import MDSettings
+from . import settings as S
+from . import tools as T
+from .Replicas import Replica
+from .Structures import FileLock
 
 
 class ProjectError(Exception):
@@ -393,7 +393,7 @@ class Project(object):
         Remove group.
         :arg str groupname: group name to be removed from project
         """
-        if self.replicagroups.has_key(groupname):
+        if groupname in self.replicagroups:
             self.replicagroups.pop(groupname)
             self.write()
             return True

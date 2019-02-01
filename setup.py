@@ -41,33 +41,6 @@ from setuptools import setup, Extension
 from setuptools.command.install import install
 import numpy
 
-class CustomInstall(install):
-    def createSolventDB(self, path):
-        from pyMDMix.Solvents import SolventManager
-        import glob
-        print("Building solvent database...")
-        dbpath = os.path.join(path, 'SOLVENTS.db')
-        configfilelist = glob.glob(os.path.join(path, '*.config'))
-        maker=SolventManager()
-        for conffile in configfilelist:
-            print('Adding solvent from {}').format(conffile)
-            maker.saveSolvent(maker.createSolvent(conffile), db=dbpath, createEmpty=True)
-        if os.path.exists(dbpath): print("DONE creating solvent DB")
-
-    def run(self):
-        install.run(self)
-	# Run solvent library building
-        solventdbpath = os.path.join(self.install_lib, 'pyMDMix','data','solventlib')
-        self.createSolventDB(solventdbpath)
-	#import glob
-	#import subprocess
-	##for f in glob.glob(solventdbpath+os.sep+'*.config'):
-	##	print "Adding solvent in %s file"%f
-	#p = subprocess.Popen(['python',solventdbpath+os.sep+'createSolventDB.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	#print p.stdout.read()
-	#print p.stderr.read()
-	#print solventdbpath+os.sep+"SOLVENT.db"
-
 # Make sure I have the right Python version.
 if sys.version_info[:2] < (2, 5):
     print("pyMDMix requires Python 2.5 or later. Python %d.%d \
@@ -76,9 +49,9 @@ if sys.version_info[:2] < (2, 5):
     sys.exit(-1)
 
 # Make sure AMBERHOME environ variable is set
-if not os.environ.get('AMBERHOME'):
-    print("AMBERHOME env variable not set! Please set this variable pointing to AMBER package \
-          installation directory.")
+#if not os.environ.get('AMBERHOME'):
+#    print("AMBERHOME env variable not set! Please set this variable pointing to AMBER package \
+#          installation directory.")
 
 #scriptlist = ['scripts/prepareMDMixProject.py','scripts/runCenteringAndRawEnergyCalculations.py','scripts/createMinotauroQueueInput.py','scripts/createPaintersQueueInput.py', 'scripts/runReplicaCentering.py','scripts/extendReplica.py', 'scripts/printReplicaInfo.py','scripts/createReplicaCenteringInput.py','scripts/runReplicaDensityAndRawCalculation.py', 'scripts/mdmix']
 scriptlist = ['src/mdmix']
@@ -97,7 +70,6 @@ def getVersionFromInit():
 		if '__version__' in l: return l.split('=')[1].split('"')[1]
 
 setup(name='pyMDMix',
-      cmdclass={'install': CustomInstall},
       zip_safe=False,
       version= getVersionFromInit(),
       description='Molecular Dynamics with organic solvent mixtures setup and analysis',

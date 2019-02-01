@@ -1337,8 +1337,8 @@ def getRadialIndices(radius, spacing, minradius=False):
 
 ###TESTING
 
-import Biskit.test as BT
-import tools as T
+import biskit.test as BT
+from . import tools as T
 
 class Test(BT.BiskitTest):
     """Test"""

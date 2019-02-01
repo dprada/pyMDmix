@@ -35,8 +35,8 @@ import copy
 import numpy as npy
 import logging
 
-import settings as S
-import GridData 
+from . import settings as S
+from . import GridData 
 
 class GridError(Exception):
     pass
@@ -74,7 +74,7 @@ class Grid(GridData.GridData):
             self.type = type
             self.setHeader(info=info)
         else:
-            raise TypeError, "%s type not valid. Valid types are: %s"%(type, S.GRIDTYPES)
+            raise TypeError("%s type not valid. Valid types are: %s"%(type, S.GRIDTYPES))
 
     def getPercentileCutValue(self, percentile, maskout=False):
         """
@@ -242,7 +242,8 @@ class GridSpace(object):
         self.__buildMapping()   # Rebuild clean mapping from loaded grids
         for probe, newprobes in probeDegeneracyDict.items():
             for np in newprobes:
-                if self.probeMapping.has_key(np): self.log.warn("Overwriting existing Mapping Key: %s"%np)
+                if np in self.probeMapping:
+                    self.log.warn("Overwriting existing Mapping Key: %s"%np)
                 self.probeMapping[np] = self.probeMapping[probe]
         self.__buildReverseMapping()
         return True
@@ -265,7 +266,7 @@ class GridSpace(object):
                 if k: [dims.append(i) for i in k]
                 else:
                     self.log.error("(reduce) Invalid probe name: %s"%p)
-                    raise ProbeError, "Invalid probe name: %s"%p
+                    raise ProbeError("Invalid probe name: %s"%p)
             dims = tuple(npy.unique(dims).tolist())
             gspace = self.gspace[:,:,:,dims]
             ndims = gspace.shape[-1]+1
@@ -314,7 +315,7 @@ class GridSpace(object):
         probes = [grid.probe for grid in self.grids]
         self.probelist = probes
         for i in range(self.ndim):
-            if self.probeMapping.has_key(probes[i]):
+            if probes[i] in self.probeMapping:
                 self.probeMapping[probes[i]] += [i]
             else:
                 self.probeMapping[probes[i]] = [i]
@@ -327,20 +328,20 @@ class GridSpace(object):
         for n, d in self.probeMapping.items():
             if isinstance(d, list):
                 for i in d:
-                    if not map_dict.has_key(i):
+                    if i not in map_dict:
                         if isinstance(n, list):
                         	map_dict[i] = n
-			else: map_dict[i] = [n]
+                        else: map_dict[i] = [n]
                     else:
                         if isinstance(n, list): [map_dict[i].append(e) for e in n]
                         else: map_dict[i].append(n)
             else:
                 i = d
-                if not map_dict.has_key(i):
+                if i not in map_dict:
                     if isinstance(n, list):
                     	map_dict[i] = n
-		    else: 
-			map_dict[i] = [n]
+                    else: 
+                        map_dict[i] = [n]
                 else:
                     if isinstance(n, list): [map_dict[i].append(e) for e in n]
                     else: map_dict[i].append(n)
@@ -455,7 +456,7 @@ class GridSpace(object):
                 else:
                     ndim = ndim
             if not ndim:
-                raise ValueError, "ndim out of maximum dimension"
+               raise ValueError("ndim out of maximum dimension")
         elif name:
             if isinstance(name, str):
                 ndim = [self.probeMapping.get(name)]
@@ -463,11 +464,12 @@ class GridSpace(object):
                 ndim = [self.probeMapping.get(n) for n in name]
 #                print name, ndim
             if npy.any([el == None for el in ndim]):
-                raise ValueError, "%s name not in GridSpace mapping dict"%name
+                raise ValueError("%s name not in GridSpace mapping dict"%name)
         elif cross:
             ndim = False
         else:
-            raise ValueError, "valid ndim, name or atype argument must be given. Else choose 'cross'"
+            raise ValueError("valid ndim, name or atype argument must be given. Else choose\
+                             'cross'")
 
         # Choose options
         if choose == 'min':
@@ -509,7 +511,7 @@ class GridSpace(object):
         elif mode == 'max':
             process = npy.max
         else:
-            raise ValueError, "Invalid mode, should be point, avg, boltz, min or max"
+            raise ValueError("Invalid mode, should be point, avg, boltz, min or max")
 
         # Get values
         values = [self._vals(idx, d, r) for d in ndim]
@@ -547,7 +549,7 @@ class GridSpace(object):
         if mode in ('point','avg','boltz','min','max','volmean'):
             self._defaultmode = mode
         else:
-            print "Warning mode ",mode," is invalid."
+            print("Warning mode ",mode," is invalid.")
 
     def setT(self, T):
         self._defT = T
@@ -712,7 +714,7 @@ def getEnergyFromTxtCoords(grid, txtfile, radius=0, temp=300.):
     Using a txt file for defining coordinates and radius to extract energies from grid *grid*.
     """
     if osp.exists(txtfile): txt = open(txtfile, 'r').readlines()
-    else: raise BadFile, "File name %s not found."%txtfile
+    else: raise BadFile("File name %s not found."%txtfile)
 
     # Collect coordinates and radius
     coords = []
@@ -728,7 +730,8 @@ def getEnergyFromTxtCoords(grid, txtfile, radius=0, temp=300.):
             coords.append([x,y,z])
             rads.append(r)
         else:
-            raise BadFile, "File %s contains lines with wrong format. Expected 3 or 4 elements per line."%txtfile
+            raise BadFile("File %s contains lines with wrong format. Expected 3 or 4 elements per\
+                          line."%txtfile)
 
     # Fetch results
     return getEnergyValues(grid, coords, rads, temp=temp)
@@ -742,7 +745,7 @@ def getEnergyFromPDBCoords(grid, pdbfile, forceradius=0, temp=300.):
     """
     import Biskit as bi
     if osp.exists(pdbfile): pdb = bi.PDBModel(pdbfile)
-    else: raise BadFile, "File name %s not found."%pdbfile
+    else: raise BadFile("File name %s not found."%pdbfile)
 
     # Collect coordinates and radius
     coords = pdb.xyz
@@ -772,7 +775,7 @@ def gridDifference(grid1, grid2, outname):
     outg.probe="UNK"
     if 'xplor' in outname: outg.writeXPLOR(outname)
     else: outg.writeDX(outname)
-    print "Saved %s with difference in grids (%s - %s)"%(outname, grid1, grid2)
+    print("Saved %s with difference in grids (%s - %s)"%(outname, grid1, grid2))
 
 def gridSum(grid1, grid2, outname):
     "Save a grid with the sum in data from grid1+grid2 with name outname."
@@ -791,7 +794,7 @@ def gridSum(grid1, grid2, outname):
     outg.probe="UNK"
     if 'xplor' in outname: outg.writeXPLOR(outname)
     else: outg.writeDX(outname)
-    print "Saved %s with sum of grids (%s + %s)"%(outname, grid1, grid2)
+    print("Saved %s with sum of grids (%s + %s)"%(outname, grid1, grid2))
 
 def trim(*Glist):
     """
@@ -867,7 +870,8 @@ def similarity(gridList, percentile=0.02, hardcutoff=False, comparepositive=Fals
     """
     import itertools
     
-    if not isinstance(gridList, list): raise AttributeError, "Expected gridList of type list. Got %s instead."%(type(gridList))
+    if not isinstance(gridList, list):
+        raise AttributeError("Expected gridList of type list. Got %s instead."%(type(gridList)))
     
     # Parse each list element to check if it is a Grid instance or a file to be loaded
     grids = []
@@ -876,9 +880,10 @@ def similarity(gridList, percentile=0.02, hardcutoff=False, comparepositive=Fals
         elif isinstance(el, str):
             # Try to load as a file
             if os.path.exists(el): grids.append(Grid(el))
-            else: raise AttributeError, "Element in list is not a valid file path or a Grid instance: %s"%el
+            else: raise AttributeError("Element in list is not a valid file path or a Grid\
+                                       instance: %s"%el)
         else:
-            raise AttributeError, "Wrong list element type: %s %s"%(el, type(el))
+            raise AttributeError("Wrong list element type: %s %s"%(el, type(el)))
     
     # Trim Grids if necessary
     grids = trim(grids)
@@ -945,5 +950,5 @@ def similarity(gridList, percentile=0.02, hardcutoff=False, comparepositive=Fals
     return data
 
 if __name__ == "__main__":
-    print "Testing GridSpace and Grid"
+    print("Testing GridSpace and Grid")
     

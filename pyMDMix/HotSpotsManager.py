@@ -86,7 +86,7 @@ class HotSpot(object):
         if energymethod in valmethods:
             self.energymethod = energymethod
         else:
-            raise AttributeError, "Wrong energy averaging method. Valid methods are: %s"%valmethods
+            raise AttributeError("Wrong energy averaging method. Valid methods are: %s"%valmethods)
         
         # Calculate volume element from spacing
         self.spacing = spacing
@@ -462,7 +462,7 @@ class HotSpotSet(object):
         """
         import Biskit as bi
         if not isinstance(pdb, bi.PDBModel):
-            raise AttributeError, "pdb argument should be a Biskit.PDBModel instance"
+            raise AttributeError("pdb argument should be a Biskit.PDBModel instance")
 
         mask = pdb['serial_number'] == atomnumber
         atomcoord = pdb.xyz[mask][0]
@@ -600,7 +600,8 @@ class HotSpotMultipleSet(HotSpotSet):
         :arg bool onlycenter: Write only the hotspot minimum energy point. Write all hotspot points if False (default).
         """
         combinedHset = combinedHset or self.combinedhset
-        if not combinedHset: raise HotSpotMultipleSetError, "No combined HSet saved or given as argument"
+        if not combinedHset:
+            raise HotSpotMultipleSetError("No combined HSet saved or given as argument")
         self.sortCombinedHSet(combinedHset)
         
          # Write a PDB for each point found
@@ -690,7 +691,7 @@ class CreateHotSpotSet(object):
         elif isinstance(grid, Grid):
             self.grid = grid
         else:
-            raise AttributeError, "grid argument should be an existing filename or a Grid instance"
+            raise AttributeError("grid argument should be an existing filename or a Grid instance")
 
         self.hotspotset = None
         self.info = info

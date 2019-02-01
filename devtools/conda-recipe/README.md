@@ -12,7 +12,7 @@ conda install conda-build anaconda-client
 conda build . --no-anaconda-upload
 PACKAGE_OUTPUT=`conda build . --output`
 anaconda login
-anaconda upload --user uibcdf $PACKAGE_OUTPUT --label dev
+anaconda upload --user uibcdf $PACKAGE_OUTPUT
 conda build purge
 anaconda logout
 ```
